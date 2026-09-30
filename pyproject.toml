@@ -11,14 +11,30 @@ dependencies = [
     "langchain-core>=1.5.5",
     "langchain-groq>=1.1.3",
     "langgraph>=1.2.11",
+    "langgraph-checkpoint-postgres>=3.1.2",
     "langgraph-cli[inmem]>=0.4.31",
+    "psycopg[binary,pool]>=3.3.5",
     "uvicorn>=0.52.3",
     "watchdog>=6.0.0",
 ]
 
-[project.scripts]
-blogagentic = "blogagentic:main"
+[tool.uv]
+package = false
 
-[build-system]
-requires = ["uv_build>=0.11.13,<0.12.0"]
-build-backend = "uv_build"
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+    "pytest-asyncio>=1.4.0",
+    "ruff>=0.16.9",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "strict"
+pythonpath = ["."]
+
+[tool.ruff.lint]
+# BLE001 (no bare `except Exception`) is disabled: the graceful-degradation
+# fallbacks in research()/groqllm.py deliberately catch any failure from an
+# external API, not a specific exception type.
+ignore = ["BLE001"]
